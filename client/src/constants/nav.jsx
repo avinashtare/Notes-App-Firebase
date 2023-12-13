@@ -9,3 +9,8 @@ export const authenticationLinks = [
     { text: "Get Started", href: "/signup" },
     { text: "Login", href: "/login" }
 ];
+
+export const logoutLinks = [
+    { text: "Logout", href: "/logout" },
+
+]

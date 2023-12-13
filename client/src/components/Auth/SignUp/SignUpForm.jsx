@@ -2,12 +2,16 @@ import React, { useContext, useState } from 'react'
 import SignUpContext from "@/context/Auth/SignUp/SignUpContext"
 import MessagesContext from "@/context/Message/MessageContext"
 import validator from "validator"
+import AuthContext from '@/context/Auth/Auth/AuthContext'
+import { useNavigate } from "react-router-dom"
+
 
 function SignUpForm() {
     // contaxt api 
     const SignUpContaxtAPI = useContext(SignUpContext);
     const MessageContext = useContext(MessagesContext);
-
+    const AuthContextAPI = useContext(AuthContext);
+    const navigate = useNavigate()
 
     // inputs 
     const [EmailAddress, setEmailAddress] = useState("")
@@ -17,14 +21,15 @@ function SignUpForm() {
     const [Lname, setLname] = useState("")
     const [PhoneNum, setPhoneNum] = useState("")
     const [Company, setCompany] = useState("")
+    const [FormRequest, setFormRequest] = useState(false)
 
     const findValidationError = () => {
         let error = [];
         if (!validator.isEmail(EmailAddress)) {
             error.push({ type: "email", msg: "Enter Valid Email Address." })
         }
-        if (!validator.isLength(Password, { min: 8 })) {
-            error.push({ type: "password", msg: "Your password less greater than equal to 8." })
+        if (!validator.isLength(Password, { min: 8, max: 500 })) {
+            error.push({ type: "password", msg: "Your password withen 1-500." })
         }
         if (Password !== ConfirmPass) {
             error.push({ type: "Cpassword", msg: "Confirm Password Not Match." })
@@ -53,15 +58,43 @@ function SignUpForm() {
         return false;
     }
 
-    const handleSignUpForm = (e) => {
+    const handleServerValidation = (errors) => {
+        errors.forEach((error) => {
+            MessageContext.danger(error.msg)
+        })
+    }
+    const handleSignUpForm = async (e) => {
         e.preventDefault()
+        // set form disabled
+        setFormRequest(true);
+
         const errorsData = findValidationError();
         const isValid = validateForm(errorsData)
 
         //sign up here
         if (isValid) {
-            SignUpContaxtAPI.CreateUser({ EmailAddress, Password, ConfirmPass, Fname, Lname, PhoneNum, Company })
+            const credentials = { EmailAddress, Password, ConfirmPass, Fname: Fname.trim(), Lname: Lname.trim(), PhoneNum, Company };
+            // create user request 
+            const isSignUp = await SignUpContaxtAPI.CreateUser(credentials)
+
+            // if user login successfully  
+            if (isSignUp.SignUp) {
+                // success msg 
+                MessageContext.success("SignUp Successfully..")
+                // update login state 
+                AuthContextAPI.CheckValidUser()
+                // navigate to home page 
+                navigate("/");
+                return true;
+            }
+
+            // if any error from server 
+            handleServerValidation(isSignUp.errors)
         }
+        setTimeout(() => {
+            // undesable form 
+            setFormRequest(false);
+        }, 2000);
     }
 
     return (
@@ -99,7 +132,7 @@ function SignUpForm() {
                     <label htmlFor="floating_company" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Company (Ex. Google)</label>
                 </div>
             </div>
-            <button onClick={handleSignUpForm} className="btn">Sign Up</button>
+            <button onClick={handleSignUpForm} disabled={FormRequest} className="btn">Sign Up</button>
         </form>
     )
 }

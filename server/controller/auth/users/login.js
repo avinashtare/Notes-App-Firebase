@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
-const { findUserByEmail } = require("../../firebase/user");
-const { ValidatePasswrodHash } = require("../../utils/passwordActions");
-const { createJwtById } = require("../../utils/JwtToken");
+const { findUserByEmail } = require("../../../firebase/user");
+const { ValidatePasswrodHash } = require("../../../utils/passwordActions");
+const { createJwtById } = require("../../../utils/JwtToken");
 
 const loginUser = async (req, res) => {
     const errors = validationResult(req);

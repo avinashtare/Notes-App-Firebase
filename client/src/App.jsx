@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import MainRouter from "@/routers/MainRouter"
 // import { FireBaseApp } from "@/firebase/config"
 // components
@@ -7,7 +7,6 @@ import Footer from '@/components/Footer'
 import MessageModal from '@/components/MessageModal'
 
 function Home() {
-
   return (
     <div className='bg-slate-800 text-white w-full h-full overflow-x-hidden'>
       {/* nav */}

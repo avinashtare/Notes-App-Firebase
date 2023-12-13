@@ -6,7 +6,7 @@ const validateNewUser = [
     check("first").isLength({ min: 3, max: 30 }).isAlpha().withMessage("Invalid First Name"),
     check("last").isLength({ min: 3, max: 30 }).isAlpha().withMessage("Invalid last Name"),
     check("phone").replace("+", "").toInt().isLength({ min: 10, max: 12 }).isNumeric().withMessage("Invalid Mobile Number"),
-    check("company").isString().isLength({ max: 30 }).isAlpha().withMessage("Invaid Company Name")
+    check("company").isString().isLength({ max: 30 }).escape().withMessage("Invaid Company Name")
 ];
 
 const validateLoginUser = [

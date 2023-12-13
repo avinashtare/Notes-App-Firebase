@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
-const { findUserByEmail, CreateUser } = require("../../firebase/user");
-const { createJwtById } = require("../../utils/JwtToken");
-const { CreatePasswrodHash } = require("../../utils/passwordActions");
+const { findUserByEmail, CreateUser } = require("../../../firebase/user");
+const { createJwtById } = require("../../../utils/JwtToken");
+const { CreatePasswrodHash } = require("../../../utils/passwordActions");
 
 
 const createUser = async (req, res, next) => {
@@ -31,7 +31,7 @@ const createUser = async (req, res, next) => {
                     {
                         type: "field",
                         value: email,
-                        msg: "Email is alrady exit enter another image.",
+                        msg: "Email is alrady exist enter another email.",
                         path: "email",
                         location: "body"
                     }
@@ -51,7 +51,7 @@ const createUser = async (req, res, next) => {
             let JwtToken = createJwtById(CreateUserRes.userId);
 
             let response = {
-                message: "User Crated.",
+                message: "User Created.",
                 status: 200,
                 data: {
                     msg: "New Use Created Successfully.",

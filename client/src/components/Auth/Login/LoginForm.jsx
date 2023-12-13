@@ -2,13 +2,20 @@ import React, { useContext, useState } from 'react'
 import LoginContext from "@/context/Auth/Login/LoginContext"
 import MessagesContext from "@/context/Message/MessageContext"
 import validator from 'validator'
+import AuthContext from '@/context/Auth/Auth/AuthContext'
+import { useNavigate } from 'react-router-dom'
+
 
 function LoginForm() {
   const MessageContext = useContext(MessagesContext);
   const LoginContexts = useContext(LoginContext)
+  const AuthContextAPI = useContext(AuthContext);
+  const navigate = useNavigate();
+
   // inputs 
   const [EmailAddress, setEmailAddress] = useState("")
   const [Password, setPassword] = useState("")
+  const [LoginRequst, setLoginRequst] = useState(false)
 
   const findValidationError = () => {
     let error = [];
@@ -33,16 +40,47 @@ function LoginForm() {
     return false;
   }
 
-  const handleLoginSubmit = (e) => {
+  const handleServerValidation = (errors) => {
+    MessageContext.danger("Invalid email & password...")
+    // errors.forEach((error) => {
+    //   MessageContext.danger(error.msg)
+    // })
+  }
+  const handleLoginSubmit = async (e) => {
     e.preventDefault()
+    // request started
+    setLoginRequst(true)
+
     const errorsData = findValidationError();
     const isValid = validateForm(errorsData)
 
     // loading here
     if (isValid) {
-      LoginContexts.LoginUser({ EmailAddress, Password })
+      const credentials = { EmailAddress, Password };
+      // login user request 
+      const isLogin = await LoginContexts.LoginUser(credentials)
+
+      // if user login successfully  
+      if (isLogin.Login) {
+        // success msg s
+        MessageContext.success("Login Successfully..");
+
+        // update login state 
+        AuthContextAPI.CheckValidUser()
+        // navigate to home page 
+        navigate("/");
+        return true;
+      }
+      // if any validation error from server 
+      handleServerValidation(isLogin.errors)
     }
+
+    // request started
+    setTimeout(() => {
+      setLoginRequst(false)
+    }, 2000);
   }
+
   return (
     <>
       <form className="max-w-md mx-auto my-16 bg-slate-900 p-5 rounded-lg">
@@ -56,7 +94,7 @@ function LoginForm() {
           <label htmlFor="floating_password" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
         </div>
 
-        <button onClick={handleLoginSubmit} className="btn">Login</button>
+        <button onClick={handleLoginSubmit} disabled={LoginRequst} className="btn">Login</button>
       </form>
     </>
   )

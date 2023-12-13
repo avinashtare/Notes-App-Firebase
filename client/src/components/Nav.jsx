@@ -1,11 +1,13 @@
-import React from 'react'
-import { NavLinks, authenticationLinks } from "@/constants/nav"
+import React, { useContext } from 'react'
+import { NavLinks, authenticationLinks, logoutLinks } from "@/constants/nav"
 import { Link, useLocation } from 'react-router-dom'
+import AuthContext from '@/context/Auth/Auth/AuthContext'
 import logo from "@/assets/logo.png"
 
 const Nav = () => {
   // get current location of dom 
   const location = useLocation()
+  const AuthContextAPI = useContext(AuthContext);
 
   // nav links producer 
   const NavLink = ({ text, href }) => {
@@ -26,7 +28,12 @@ const Nav = () => {
           </span>
         </Link>
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          {authenticationLinks.map(({ text, href }) => {
+          {!AuthContextAPI.IsValid && authenticationLinks.map(({ text, href }) => {
+            return <Link to={href} key={Math.random()} className="btn">
+              {text}
+            </Link>
+          })}
+          {AuthContextAPI.IsValid && logoutLinks.map(({ text, href }) => {
             return <Link to={href} key={Math.random()} className="btn">
               {text}
             </Link>

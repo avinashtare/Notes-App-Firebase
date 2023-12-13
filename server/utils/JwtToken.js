@@ -4,7 +4,7 @@ const SecretKey = process.env.SecretKey;
 
 const createJwtById = (userId) => {
     try {
-        let JwtToken = jwt.sign({ id: userId }, SecretKey,  { expiresIn: '3m' }); //3 months
+        const JwtToken = jwt.sign({ id: userId }, SecretKey, { expiresIn: '60d' }); //3 months
 
         // return jwt token 
         return { token: JwtToken };
@@ -13,4 +13,20 @@ const createJwtById = (userId) => {
     }
 }
 
-module.exports = { createJwtById }
+
+const findIdByJwt = (token) => {
+    try {
+        // verify id
+        const JwtVerify = jwt.verify(token,SecretKey);
+        const userId = JwtVerify.id;
+
+        // return id 
+        return { userId };
+    } catch (error) {
+        return { userId: null };
+    }
+}
+
+
+
+module.exports = { createJwtById, findIdByJwt}
