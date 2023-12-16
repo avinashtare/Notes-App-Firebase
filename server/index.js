@@ -1,28 +1,24 @@
 const express = require("express")
 require("dotenv").config()
 const app = express();
-const user = require("./routes/user")
-const validate = require("./routes/validate")
+const mainRouts = require("./routes/index")
 const cors = require('cors');
 
 const PORT = process.env.PORT || 5000;
 
 // Enable CORS for all routes
-app.use(cors({}));
+app.use(cors({origin: "*"}));
 
 // allow json 
 app.use(express.json())
-// user 
-app.use("/api/user", user);
 
-// validate user 
-app.use("/api/validate", validate);
+// all routes
+app.use("/", mainRouts)
 
 
-
-
+// Home route
 app.get("/", (req, res) => {
-    res.send("Hello Guy..")
+    res.send("This App is Running.....")
 })
 
 app.listen(PORT, () => {

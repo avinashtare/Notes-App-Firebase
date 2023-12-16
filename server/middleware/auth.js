@@ -44,6 +44,8 @@ const authUser = async (req, res, next) => {
         return res.send(VlaidUserResponse)
     }
 
+    // to acces any route this user id 
+    req.userId = userId;
     next()
 }
 
