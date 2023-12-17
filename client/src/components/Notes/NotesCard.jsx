@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 function NotesCard(props) {
-    const { id, title, content, active, timestamp } = props.data;
+    const { noteId, title, content, active, timestamp } = props.data;
     const { removeNote } = props.actions;
     const [Checked, setChecked] = useState(active);
     const chandleCheck = () => {
@@ -10,7 +10,7 @@ function NotesCard(props) {
 
     const handleDelete = ()=>{
         // send note id 
-        removeNote(id)
+        removeNote(noteId)
     }
 
     return (

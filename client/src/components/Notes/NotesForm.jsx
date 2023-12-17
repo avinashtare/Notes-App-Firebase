@@ -1,30 +1,59 @@
 import React, { useContext, useRef, useState } from 'react'
 import NotesContext from "@/context/Notes/NotesContext"
 import MessagesContext from "@/context/Message/MessageContext"
+import AuthContext from '@/context/Auth/Auth/AuthContext'
+import { useNavigate } from 'react-router-dom'
+
 
 function NotesForm() {
     // contax apis
     const NoteContext = useContext(NotesContext);
     const MessageContext = useContext(MessagesContext);
+    const AuthContextAPI = useContext(AuthContext);
+    const navigate = useNavigate()
+
 
     // input values 
     const [Note, setNote] = useState("")
     const [Desc, setDesc] = useState("")
 
-    const handleAddNote = (e) => {
+    const handleAddNote = async (e) => {
         e.preventDefault()
+        if (!AuthContextAPI.IsValid) {
+            navigate("/login")
+            return
+        }
+        if (Note.length == 0 || Note.length > 30) {
+            MessageContext.danger("Title Length Must Be 1-30")
+            return
+        }
+        if (Desc.length < 4 || Note.length > 250) {
+            MessageContext.danger("Description Length Must Be 5-250 ")
+            return
+        }
+
         const noteData = {
             title: Note,
-            content: setDesc,
+            content: Desc,
         }
-        // add data 
-        NoteContext.addNote(noteData);
-        // clear inputs         
-        setNote("")
-        setDesc("")
 
-        // show message 
-        MessageContext.success("Message Added....")
+        // add data 
+        let isAdded = await NoteContext.addNote(noteData);
+        console.log(isAdded)
+        if (isAdded.added) {
+            // clear inputs         
+            setNote("")
+            setDesc("")
+
+            // show message 
+            MessageContext.success("Note Added....")
+        }
+        else {
+            // show message 
+            MessageContext.danger("Falid To add note....")
+        }
+        console.log(NoteContext.NotesData)
+
     }
 
     return (

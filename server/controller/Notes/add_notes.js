@@ -27,6 +27,7 @@ const addNote = async (req, res) => {
     if (NoteDBRes.data) {
         const AddedSuccessfullyRes = {
             message: "Notes Added Successfully....",
+            added: true,
             status: 200,
             data: NoteDBRes.data
         }

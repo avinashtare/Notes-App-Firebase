@@ -7,8 +7,14 @@ const getAllNotes = async (req, res) => {
     // Sort notes by timestamp
     const sortedNotes = allNotes.data.sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
 
+    let SuccessResponse = {
+        message: "Notes Data..",
+        loaded: true,
+        status: 200,
+        data: sortedNotes
+    }
     // send all notes
-    res.send(sortedNotes)
+    res.send(SuccessResponse)
 }
 
 module.exports = { getAllNotes }
