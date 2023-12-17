@@ -26,11 +26,15 @@ function NotesTable() {
 
 
     // remove note 
-    const removeNote = (noteId) => {
-        NoteContext.DeleteNote(noteId)
-
-        // show msg 
-        MessageContext.danger("Message Deleted....")
+    const removeNote = async (noteId) => {
+        const isDeleted = await NoteContext.DeleteNote(noteId)
+        console.log(isDeleted)
+        if (isDeleted.deleted) {
+            MessageContext.success("Note Deleted.")
+        }
+        else {
+            MessageContext.danger("Falid To Delete Note.")
+        }
     }
     const notesData = NoteContext.NotesData;
     return (
@@ -39,7 +43,7 @@ function NotesTable() {
             <div className='flex justify-center'>
                 <div className='flex flex-wrap justify-center'>
                     {notesData.length > 0 ? notesData.slice().reverse().map((data) => {
-                        return <NotesCard key={data.noteId+Math.random()} data={data} actions={{ removeNote }} />
+                        return <NotesCard key={data.noteId + Math.random()} data={data} actions={{ removeNote }} />
                     }) : <p>Please add a note...</p>}
                 </div>
             </div>

@@ -56,6 +56,33 @@ const AddNotesRequest = async ({ title, content }) => {
     }
 }
 
+const DeleteNotesRequest = async ({ noteId }) => {
+    const auth_token = getToken();
+    const req = {
+        body: JSON.stringify({ noteId: noteId }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "token": auth_token
+        }
+    }
+
+    try {
+        let response = await fetch(`${ServerURL}/` + "api/notes/delete", req)
+        response = await response.json()
+
+        if (response.deleted) {
+            return response
+        }
+        else {
+            return { deleted: false }
+        }
+
+    } catch (error) {
+        return { deleted: false }
+    }
+}
+
 
 const NotesProvider = (props) => {
     // all notes 
@@ -75,9 +102,9 @@ const NotesProvider = (props) => {
 
             setNotesData([...NotesData, noteData])
 
-            return {added: true}
+            return { added: true }
         }
-        return {added: false}
+        return { added: false }
     }
 
 
@@ -92,8 +119,15 @@ const NotesProvider = (props) => {
         }
     }
 
-    const DeleteNote = (noteId) => {
-        setNotesData((preNotes) => preNotes.filter((note) => note.noteId != noteId));
+    const DeleteNote = async (noteId) => {
+        let isDeleted = await DeleteNotesRequest({ noteId })
+        if (isDeleted.deleted) {
+            setNotesData((preNotes) => preNotes.filter((note) => note.noteId != noteId));
+            return { deleted: true }
+        }
+        else {
+            return { deleted: false }
+        }
     }
 
     return (

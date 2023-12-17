@@ -1,4 +1,4 @@
-const { getFirestore, addDoc, collection, query, where, getDocs } = require("firebase/firestore")
+const { getFirestore, addDoc, collection, query, where, getDocs, deleteDoc } = require("firebase/firestore")
 const FireBaseApp = require("./config")
 const { v4: uuidv4 } = require('uuid');
 
@@ -19,7 +19,7 @@ const GetAllNoteDB = async (data) => {
         // fetch 
         const querySnapshot = await getDocs(getAllDocsQuery);
         // get all one by one 
-        const allNotesData = querySnapshot.docs.map(doc =>{
+        const allNotesData = querySnapshot.docs.map(doc => {
             const { userId, ...allFields } = doc.data();
             return allFields;
         });
@@ -27,11 +27,9 @@ const GetAllNoteDB = async (data) => {
         // success 
         return { data: allNotesData };
     } catch (e) {
-        console.log(e)
         return { data: null };
     }
 }
-
 
 // add notes in firestore db 
 const AddNoteDB = async (data) => {
@@ -55,4 +53,26 @@ const AddNoteDB = async (data) => {
     }
 }
 
-module.exports = { AddNoteDB, GetAllNoteDB }
+// remove note from user
+// add notes in firestore db 
+const DeleteNoteDB = async (data) => {
+    const { noteId } = data;
+    try {
+        // query 
+        const getAllDocsQuery = query(noteColllection, where('noteId', '==', noteId));
+        // fetch 
+        const querySnapshot = await getDocs(getAllDocsQuery);
+
+        querySnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        })
+        // console.log(querySnapshot)
+        // success 
+        return { deleted: true };
+    } catch (e) {
+        return { deleted: false };
+    }
+}
+
+
+module.exports = { AddNoteDB, GetAllNoteDB, DeleteNoteDB }
