@@ -5,7 +5,7 @@ const {  getCurrentDateTime } = require("../../utils/time");
 const addNote = async (req, res) => {
     // check validation erro and handle 
     const errors = validationResult(req);
-
+    const userId = req.userId;
     // error response 
     let invalidNote = {
         message: "Invalid Notes Data",
@@ -19,10 +19,9 @@ const addNote = async (req, res) => {
     }
 
     const currentTime = getCurrentDateTime()
-    const noteData = { userId: req.userId, title: req.body.title, content: req.body.content, active: false, timestamp: currentTime }
+    const noteData = { userId: userId, title: req.body.title, content: req.body.content, active: false, timestamp: currentTime }
 
     const NoteDBRes = await AddNoteDB(noteData)
-
 
     if (NoteDBRes.data) {
         const AddedSuccessfullyRes = {

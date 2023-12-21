@@ -1,4 +1,4 @@
-const { getFirestore, addDoc, collection, query, where, getDocs, deleteDoc } = require("firebase/firestore")
+const { getFirestore, addDoc, collection, query, where, getDocs, deleteDoc, updateDoc } = require("firebase/firestore")
 const FireBaseApp = require("./config")
 const { v4: uuidv4 } = require('uuid');
 
@@ -74,5 +74,39 @@ const DeleteNoteDB = async (data) => {
     }
 }
 
+// update existing notes in firestore db 
+const UpdateNoteDB = async (data) => {
+    try {
+        // data from user 
+        const { userId, noteId, title, content, active } = data;
+        // update data 
+        const updateData = {};
+        if (title !== undefined) { updateData.title = title; }
+        if (content !== undefined) { updateData.content = content; }
+        if (active !== undefined) { updateData.active = active; }
 
-module.exports = { AddNoteDB, GetAllNoteDB, DeleteNoteDB }
+        // query to find correct note
+        const getAllDocsQuery = query(
+            noteColllection,
+            where('noteId', '==', noteId),
+            where('userId', '==', userId)
+        );
+
+        // fetch note
+        const querySnapshot = await getDocs(getAllDocsQuery);
+        // this is old note 
+        const oldNotes = querySnapshot.docs[0].data();
+        // ref of old note 
+        const docRef = querySnapshot.docs[0].ref;
+        if (!oldNotes) { return false }
+
+        // update note 
+        await updateDoc(docRef, updateData)
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+
+module.exports = { AddNoteDB, GetAllNoteDB, DeleteNoteDB, UpdateNoteDB }
