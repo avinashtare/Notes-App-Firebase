@@ -20,7 +20,6 @@ const SignUpProvider = (props) => {
   const CreateUser = async (credentials) => {
     const UserCredentialsData = { email: credentials.EmailAddress, password: credentials.Password, first: credentials.Fname, last: credentials.Lname, phone: credentials.PhoneNum, company: credentials.Company }
 
-    // console.log(credentials)
     const UserCredentials = JSON.stringify(UserCredentialsData);
 
     const registerResponse = await registerUser(UserCredentials);

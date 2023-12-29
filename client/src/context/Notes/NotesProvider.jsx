@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useDeferredValue, useState } from "react"
 import NotesContext from "./NotesContext"
 const ServerURL = import.meta.env.VITE_SERVER_URL;
 import { getToken } from "@/utils/auth-session"
 
 const LoadNotesRequest = async () => {
-    const auth_token = getToken();
+    const auth_token = await getToken();
     const req = {
         method: "POST",
         headers: {
@@ -30,7 +30,7 @@ const LoadNotesRequest = async () => {
 }
 
 const AddNotesRequest = async ({ title, content }) => {
-    const auth_token = getToken();
+    const auth_token = await getToken();
     const req = {
         body: JSON.stringify({ title: title, content: content }),
         method: "POST",
@@ -56,8 +56,35 @@ const AddNotesRequest = async ({ title, content }) => {
     }
 }
 
+const UpdateNotesRequest = async ({ noteId, title, content, active }) => {
+    const auth_token = await getToken();
+    const req = {
+        body: JSON.stringify({ noteId, title, content,active }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "token": auth_token
+        }
+    }
+
+    try {
+        let response = await fetch(`${ServerURL}/` + "api/notes/update", req)
+        response = await response.json()
+
+        if (response.updated) {
+            return { updated: true }
+        }
+        else {
+            return { updated: false }
+        }
+
+    } catch (error) {
+        return { updated: false }
+    }
+}
+
 const DeleteNotesRequest = async ({ noteId }) => {
-    const auth_token = getToken();
+    const auth_token = await getToken();
     const req = {
         body: JSON.stringify({ noteId: noteId }),
         method: "POST",
@@ -84,6 +111,7 @@ const DeleteNotesRequest = async ({ noteId }) => {
 }
 
 
+
 const NotesProvider = (props) => {
     // all notes 
     const [NotesData, setNotesData] = useState([]);
@@ -107,7 +135,6 @@ const NotesProvider = (props) => {
         return { added: false }
     }
 
-
     const loadNotes = async () => {
         const StoredNotes = await LoadNotesRequest()
         if (StoredNotes.loaded) {
@@ -117,6 +144,14 @@ const NotesProvider = (props) => {
         else {
             return false
         }
+    }
+    
+    const UpdateNote = async (noteData)=>{
+        // UpdateNotesRequest
+        const UpdateDataServer = await UpdateNotesRequest(noteData);
+        // if note updated load new data 
+        if(UpdateDataServer.updated) loadNotes();
+        return UpdateDataServer;
     }
 
     const DeleteNote = async (noteId) => {
@@ -131,7 +166,7 @@ const NotesProvider = (props) => {
     }
 
     return (
-        <NotesContext.Provider value={{ loadNotes, NotesData, addNote, DeleteNote }}>
+        <NotesContext.Provider value={{ loadNotes, NotesData, addNote, DeleteNote,UpdateNote }}>
             {props.children}
         </NotesContext.Provider>
     )

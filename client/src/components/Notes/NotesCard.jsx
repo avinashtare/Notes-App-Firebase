@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 function NotesCard(props) {
     const { noteId, title, content, active, timestamp } = props.data;
-    const { removeNote } = props.actions;
+    const { removeNote,updateNote } = props.actions;
     const [Checked, setChecked] = useState(active);
     const chandleCheck = () => {
         Checked ? setChecked(false) : setChecked(true)
@@ -11,6 +11,10 @@ function NotesCard(props) {
     const handleDelete = ()=>{
         // send note id 
         removeNote(noteId)
+    }
+
+    const handleUpdate = ()=>{
+        updateNote({noteId, title, content, active})
     }
 
     return (
@@ -27,7 +31,7 @@ function NotesCard(props) {
                     <span>{timestamp}</span>
                     <div className="actions  mt-5 flex items-center">
                         <button className="btn bg-red-600" onClick={handleDelete}>Delete</button>
-                        <button className="btn bg-green-500">Update</button>
+                        <button className="btn bg-green-500" onClick={handleUpdate}>Update</button>
                         <div className="flex items-center">
                             <input type="checkbox" className="ml-2 w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 outline-none" checked={Checked && true} onChange={chandleCheck} />
                         </div>

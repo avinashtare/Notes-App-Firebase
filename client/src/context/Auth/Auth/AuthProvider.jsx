@@ -13,7 +13,7 @@ const AuthProvider = (prpos) => {
     }, [])
 
     const CheckValidUser = async () => {
-        const token = getToken("auth")
+        const token = await getToken("auth")
         const req = {
             body: {},
             method: "POST",

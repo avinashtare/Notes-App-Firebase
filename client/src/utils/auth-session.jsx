@@ -1,11 +1,19 @@
-const setToken = (value) => {
-    return sessionStorage.setItem("auth", value)
+const setToken = async (value) => {
+    try {
+        return await window.cookieStore.set("auth", value);
+    } catch (error) { return false; }
 }
-const getToken = () => {
-    return sessionStorage.getItem("auth")
+const getToken = async () => {
+    try {
+        let cookieData = await window.cookieStore.get("auth")
+        return cookieData.value;
+
+    } catch (error) { return false; }
 }
-const removeToken = () => {
-    return sessionStorage.removeItem("auth")
+const removeToken = async () => {
+    try {
+        return await window.cookieStore.delete("auth");
+    } catch (error) { return false; }
 }
 
 export { setToken, getToken, removeToken }

@@ -66,7 +66,6 @@ const DeleteNoteDB = async (data) => {
         querySnapshot.forEach(async (doc) => {
             await deleteDoc(doc.ref);
         })
-        // console.log(querySnapshot)
         // success 
         return { deleted: true };
     } catch (e) {

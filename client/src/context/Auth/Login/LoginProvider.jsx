@@ -22,7 +22,6 @@ const LoginProvider = (prpos) => {
         const UserCredentialsData = { email: credentials.EmailAddress, password: credentials.Password }
         const UserCredentials = JSON.stringify(UserCredentialsData);
         const LoginResponse = await LoginUserRequest(UserCredentials);
-        console.log(LoginResponse)
         // set auth token 
         try {
             let token = LoginResponse.data.token;
@@ -44,9 +43,3 @@ const LoginProvider = (prpos) => {
 }
 
 export default LoginProvider;
-
-
-// console.log(credentials)
-
-
-
